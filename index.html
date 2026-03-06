@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Systeem Filmisch Rapporteren | De Correctie: Wij-vorm</title>
+    <style>
+        :root { 
+            --korps-blauw: #002C52; --achtergrond: #ECEFF1; --wit: #FFFFFF; 
+            --grijs-rand: #B0BEC5; --geel-postit: #FFFDE7; --tekst: #263238;
+            --succes: #388E3C; --fout: #C62828; 
+        }
+        body { font-family: "Segoe UI", Arial, sans-serif; background: var(--achtergrond); color: var(--tekst); margin: 0; padding: 20px; }
+        .header-container { background: var(--wit); padding: 25px; border: 1px solid var(--grijs-rand); border-top: 5px solid var(--korps-blauw); margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        h1 { margin: 0 0 10px 0; font-size: 20px; color: var(--korps-blauw); text-transform: lowercase; }
+        .instructie-blok { background: #F8F9FA; border-left: 4px solid var(--korps-blauw); padding: 15px; font-size: 14px; line-height: 1.5; margin-bottom: 20px; }
+        .fout-display { background: #FAFAFA; border: 1px solid var(--grijs-rand); padding: 20px; margin: 15px 0; font-weight: 500; font-size: 18px; text-align: center; color: var(--fout); border-radius: 4px; }
+        .input-sectie { display: flex; gap: 15px; margin-bottom: 30px; }
+        input[type="text"] { flex-grow: 1; padding: 15px; border: 1px solid var(--grijs-rand); border-radius: 4px; font-size: 16px; outline: none; }
+        input[type="text"]:focus { border-color: var(--korps-blauw); }
+        .btn-action { background: var(--korps-blauw); color: white; border: none; padding: 0 30px; cursor: pointer; font-weight: bold; border-radius: 4px; text-transform: uppercase; font-size: 12px; }
+        #sticky-feed { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; padding-bottom: 80px; }
+        .sticky-note { background: var(--geel-postit); padding: 20px; min-height: 120px; box-shadow: 2px 2px 10px rgba(0,0,0,0.05); border: 1px solid #E0E0E0; display: flex; flex-direction: column; justify-content: space-between; position: relative; transition: transform 0.2s; }
+        .sticky-note:hover { transform: translateY(-3px); box-shadow: 4px 4px 15px rgba(0,0,0,0.1); }
+        .sticky-text { font-size: 15px; margin-bottom: 15px; line-height: 1.5; color: #37474F; }
+        .sticky-meta { font-size: 11px; color: #78909C; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .vote-bar { display: flex; gap: 10px; }
+        .vote-btn { cursor: pointer; background: white; border: 1px solid var(--grijs-rand); border-radius: 4px; padding: 4px 10px; font-size: 13px; display: flex; align-items: center; gap: 5px; transition: 0.2s; }
+        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--achtergrond); z-index: 4000; display: flex; align-items: center; justify-content: center; }
+        .login-card { background: var(--wit); padding: 40px; border: 1px solid var(--grijs-rand); width: 350px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-top: 6px solid var(--korps-blauw); }
+        .admin-panel { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--korps-blauw); color: white; padding: 15px 20px; display: flex; justify-content: center; gap: 20px; align-items: center; z-index: 2000; }
+        .btn-admin { background: var(--succes); color: white; border: none; padding: 10px 20px; cursor: pointer; font-size: 12px; font-weight: bold; border-radius: 3px; }
+    </style>
+</head>
+<body>
+
+<div id="login-overlay">
+    <div class="login-card">
+        <h2 style="color: var(--korps-blauw); margin-top:0;">de correctie: wij-vorm</h2>
+        <input type="text" id="username" placeholder="uw naam">
+        <select id="userclass">
+            <option value="">-- kies eenheid --</option>
+            <option value="delta">delta</option><option value="echo">echo</option><option value="foxtrot">foxtrot</option>
+            <option value="golf">golf</option><option value="hotel">hotel</option><option value="lima">lima</option><option value="mike">mike</option>
+        </select>
+        <button class="btn-action" style="width:100%; height:45px;" onclick="joinGame()">start sessie</button>
+    </div>
+</div>
+
+<div class="header-container">
+    <h1 id="klas-titel">correctie-eenheid</h1>
+    <div class="instructie-blok">
+        <strong>opdracht:</strong> Schrijf de onderstaande zin om naar een individuele <strong>filmische</strong> waarneming in de <strong>ovt</strong>. 
+        <br>Vermijd de wij-vorm ("wij zagen", "wij dachten") en subjectieve interpretaties. Splits acties indien nodig per rapporteur.
+    </div>
+    <div class="fout-display" id="fout-zin-display">Wachten op instructie...</div>
+    <div class="input-sectie">
+        <input type="text" id="correctie-input" placeholder="Typ hier de individuele reden van wetenschap...">
+        <button class="btn-action" onclick="submitCorrectie()">plakken</button>
+    </div>
+</div>
+
+<div id="sticky-feed"></div>
+
+<div class="admin-panel" id="admin-area" style="display:none;">
+    <span style="font-size: 13px; font-weight: bold;">DOCENT REGIE:</span>
+    <button class="btn-admin" onclick="volgendeZin()">VOLGENDE FOUTIEVE ZIN</button>
+    <button class="btn-admin" style="background:#546E7A" onclick="resetFeed()">FEED LEEGMAKEN</button>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, set, onValue, update, push, get, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyB12mTMBnuxdC4W4htyFO_C7Dnh3maVKew",
+        authDomain: "decoroefening.firebaseapp.com",
+        databaseURL: "https://decoroefening-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "decoroefening"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    let myName, myClass;
+
+    const foutieveZinnen = [
+        "Wij zagen dat de verdachte zich verdacht gedroeg en wij besloten hem te stoppen.",
+        "Wij hoorden een harde klal en wij dachten dat er geschoten werd.",
+        "Wij voelden dat de sfeer grimmig werd en wij besloten extra eenheden op te roepen.",
+        "Wij zagen de bavianen met de mandarijnen rennen en wij dachten dat ze deze gestolen hadden.",
+        "Wij roken een sterke henneplucht en wij besloten het pand direct te betreden.",
+        "Wij zagen dat de getuige angstig naar de dwergpapegaai keek en wij hoorden hem schreeuwen.",
+        "Wij besloten de achtervolging in te zetten omdat wij zagen dat de motoragent hulp nodig had.",
+        "Wij voelden aan de motorkap dat deze nog warm was en wij dachten dat het voertuig net geparkeerd was."
+    ];
+
+    window.joinGame = function() {
+        myName = document.getElementById('username').value.trim();
+        myClass = document.getElementById('userclass').value;
+        if(!myName || !myClass) return;
+        if(myName.toLowerCase() === 'docent') document.getElementById('admin-area').style.display = 'flex';
+        document.getElementById('klas-titel').innerText = `Eenheid ${myClass.toUpperCase()}: Reden van Wetenschap`;
+        document.getElementById('login-overlay').style.display = 'none';
+        initSync();
+    };
+
+    function initSync() {
+        onValue(ref(db, `correctie/${myClass}`), (snapshot) => {
+            const data = snapshot.val() || {};
+            document.getElementById('fout-zin-display').innerText = foutieveZinnen[data.zinIndex || 0];
+            const feed = document.getElementById('sticky-feed');
+            feed.innerHTML = "";
+            if(data.posts) {
+                Object.keys(data.posts).reverse().forEach(key => {
+                    const post = data.posts[key];
+                    const note = document.createElement('div');
+                    note.className = 'sticky-note';
+                    note.innerHTML = `<div class="sticky-text">${post.text}</div>
+                        <div class="sticky-meta"><span>Door: <strong>${post.user}</strong></span>
+                        <div class="vote-bar">
+                            <button class="vote-btn" onclick="window.vote('${key}', 'up')">👍 <span>${post.up || 0}</span></button>
+                            <button class="vote-btn" onclick="window.vote('${key}', 'down')">👎 <span>${post.down || 0}</span></button>
+                        </div></div>`;
+                    feed.appendChild(note);
+                });
+            }
+        });
+    }
+
+    window.submitCorrectie = function() {
+        const input = document.getElementById('correctie-input');
+        if(!input.value.trim()) return;
+        push(ref(db, `correctie/${myClass}/posts`), { user: myName, text: input.value, up: 0, down: 0, time: Date.now() });
+        input.value = "";
+    };
+
+    window.vote = async function(key, type) {
+        const voteRef = ref(db, `correctie/${myClass}/posts/${key}/${type}`);
+        const snap = await get(voteRef);
+        set(voteRef, (snap.val() || 0) + 1);
+    };
+
+    window.volgendeZin = async function() {
+        const snap = await get(ref(db, `correctie/${myClass}/zinIndex`));
+        let next = (snap.val() || 0) + 1;
+        if(next >= foutieveZinnen.length) next = 0;
+        update(ref(db, `correctie/${myClass}`), { zinIndex: next, posts: null });
+    };
+
+    window.resetFeed = function() {
+        if(confirm("Feed leegmaken?")) remove(ref(db, `correctie/${myClass}/posts`));
+    };
+</script>
+</body>
+</html>
