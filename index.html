@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Systeem Filmisch Rapporteren | De Correctie: Wij-vorm</title>
+    <title>PV Bevindingen | Live Correctie Systeem</title>
     <style>
         :root { 
             --korps-blauw: #002C52; --achtergrond: #ECEFF1; --wit: #FFFFFF; 
@@ -11,23 +11,44 @@
             --succes: #388E3C; --fout: #C62828; 
         }
         body { font-family: "Segoe UI", Arial, sans-serif; background: var(--achtergrond); color: var(--tekst); margin: 0; padding: 20px; }
+        
+        /* Header & Instructie */
         .header-container { background: var(--wit); padding: 25px; border: 1px solid var(--grijs-rand); border-top: 5px solid var(--korps-blauw); margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         h1 { margin: 0 0 10px 0; font-size: 20px; color: var(--korps-blauw); text-transform: lowercase; }
         .instructie-blok { background: #F8F9FA; border-left: 4px solid var(--korps-blauw); padding: 15px; font-size: 14px; line-height: 1.5; margin-bottom: 20px; }
-        .fout-display { background: #FAFAFA; border: 1px solid var(--grijs-rand); padding: 20px; margin: 15px 0; font-weight: 500; font-size: 18px; text-align: center; color: var(--fout); border-radius: 4px; }
+        
+        /* De Foutieve Zin */
+        .fout-display { 
+            background: #FAFAFA; border: 1px solid var(--grijs-rand); padding: 20px; 
+            margin: 15px 0; font-weight: 500; font-size: 18px; text-align: center; 
+            color: var(--fout); border-radius: 4px; min-height: 50px; display: flex; align-items: center; justify-content: center;
+        }
+        
+        /* Invoer */
         .input-sectie { display: flex; gap: 15px; margin-bottom: 30px; }
         input[type="text"] { flex-grow: 1; padding: 15px; border: 1px solid var(--grijs-rand); border-radius: 4px; font-size: 16px; outline: none; }
-        input[type="text"]:focus { border-color: var(--korps-blauw); }
         .btn-action { background: var(--korps-blauw); color: white; border: none; padding: 0 30px; cursor: pointer; font-weight: bold; border-radius: 4px; text-transform: uppercase; font-size: 12px; }
-        #sticky-feed { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; padding-bottom: 80px; }
-        .sticky-note { background: var(--geel-postit); padding: 20px; min-height: 120px; box-shadow: 2px 2px 10px rgba(0,0,0,0.05); border: 1px solid #E0E0E0; display: flex; flex-direction: column; justify-content: space-between; position: relative; transition: transform 0.2s; }
-        .sticky-note:hover { transform: translateY(-3px); box-shadow: 4px 4px 15px rgba(0,0,0,0.1); }
-        .sticky-text { font-size: 15px; margin-bottom: 15px; line-height: 1.5; color: #37474F; }
+
+        /* Sticky Feed */
+        #sticky-feed { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; padding-bottom: 100px; }
+        .sticky-note { 
+            background: var(--geel-postit); padding: 20px; min-height: 130px; 
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.05); border: 1px solid #E0E0E0;
+            display: flex; flex-direction: column; justify-content: space-between; position: relative;
+        }
+        .sticky-text { font-size: 15px; margin-bottom: 15px; line-height: 1.5; color: #37474F; word-wrap: break-word; }
         .sticky-meta { font-size: 11px; color: #78909C; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 12px; display: flex; justify-content: space-between; align-items: center; }
-        .vote-bar { display: flex; gap: 10px; }
-        .vote-btn { cursor: pointer; background: white; border: 1px solid var(--grijs-rand); border-radius: 4px; padding: 4px 10px; font-size: 13px; display: flex; align-items: center; gap: 5px; transition: 0.2s; }
+        
+        /* Voting */
+        .vote-bar { display: flex; gap: 8px; }
+        .vote-btn { cursor: pointer; background: white; border: 1px solid var(--grijs-rand); border-radius: 4px; padding: 4px 10px; font-size: 13px; display: flex; align-items: center; gap: 5px; }
+
+        /* Login */
         #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--achtergrond); z-index: 4000; display: flex; align-items: center; justify-content: center; }
         .login-card { background: var(--wit); padding: 40px; border: 1px solid var(--grijs-rand); width: 350px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-top: 6px solid var(--korps-blauw); }
+        select, input[type="text"]#username { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid var(--grijs-rand); box-sizing: border-box; }
+
+        /* Admin Paneel */
         .admin-panel { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--korps-blauw); color: white; padding: 15px 20px; display: flex; justify-content: center; gap: 20px; align-items: center; z-index: 2000; }
         .btn-admin { background: var(--succes); color: white; border: none; padding: 10px 20px; cursor: pointer; font-size: 12px; font-weight: bold; border-radius: 3px; }
     </style>
@@ -36,10 +57,10 @@
 
 <div id="login-overlay">
     <div class="login-card">
-        <h2 style="color: var(--korps-blauw); margin-top:0;">de correctie: wij-vorm</h2>
-        <input type="text" id="username" placeholder="uw naam">
+        <h2 style="color: var(--korps-blauw); margin-top:0;">pv bevindingen</h2>
+        <input type="text" id="username" placeholder="uw naam (of 'docent')">
         <select id="userclass">
-            <option value="">-- kies eenheid --</option>
+            <option value="">-- selecteer eenheid --</option>
             <option value="delta">delta</option><option value="echo">echo</option><option value="foxtrot">foxtrot</option>
             <option value="golf">golf</option><option value="hotel">hotel</option><option value="lima">lima</option><option value="mike">mike</option>
         </select>
@@ -48,14 +69,14 @@
 </div>
 
 <div class="header-container">
-    <h1 id="klas-titel">correctie-eenheid</h1>
+    <h1 id="klas-titel">proces-verbaal bevindingen</h1>
     <div class="instructie-blok">
         <strong>opdracht:</strong> Schrijf de onderstaande zin om naar een individuele <strong>filmische</strong> waarneming in de <strong>ovt</strong>. 
-        <br>Vermijd de wij-vorm ("wij zagen", "wij dachten") en subjectieve interpretaties. Splits acties indien nodig per rapporteur.
+        <br>Vermijd de wij-vorm ("wij zagen"), conclusies ("hij was boos") en vage termen ("even later"). Beschrijf puur wat <u>jij</u> zag of deed.
     </div>
-    <div class="fout-display" id="fout-zin-display">Wachten op instructie...</div>
+    <div class="fout-display" id="fout-zin-display">Wachten op de docent...</div>
     <div class="input-sectie">
-        <input type="text" id="correctie-input" placeholder="Typ hier de individuele reden van wetenschap...">
+        <input type="text" id="correctie-input" placeholder="Typ hier de feitelijke zin...">
         <button class="btn-action" onclick="submitCorrectie()">plakken</button>
     </div>
 </div>
@@ -64,8 +85,8 @@
 
 <div class="admin-panel" id="admin-area" style="display:none;">
     <span style="font-size: 13px; font-weight: bold;">DOCENT REGIE:</span>
-    <button class="btn-admin" onclick="volgendeZin()">VOLGENDE FOUTIEVE ZIN</button>
-    <button class="btn-admin" style="background:#546E7A" onclick="resetFeed()">FEED LEEGMAKEN</button>
+    <button class="btn-admin" onclick="volgendeZin()">VOLGENDE ZIN & RESET FEED</button>
+    <button class="btn-admin" style="background:#546E7A" onclick="resetFeed()">ALLEEN FEED LEEGMAKEN</button>
 </div>
 
 <script type="module">
@@ -84,14 +105,21 @@
     let myName, myClass;
 
     const foutieveZinnen = [
-        "Wij zagen dat de verdachte zich verdacht gedroeg en wij besloten hem te stoppen.",
-        "Wij hoorden een harde klal en wij dachten dat er geschoten werd.",
-        "Wij voelden dat de sfeer grimmig werd en wij besloten extra eenheden op te roepen.",
-        "Wij zagen de bavianen met de mandarijnen rennen en wij dachten dat ze deze gestolen hadden.",
+        "Wij zagen dat de verdachte een boos gezicht trok en wij besloten hem direct aan te houden.",
+        "Even later zagen wij het voertuig met hoge snelheid door de straat rijden.",
+        "Het was duidelijk dat de man onder invloed was, want hij gedroeg zich erg vervelend tegenover ons.",
+        "Wij voelden dat de sfeer grimmig werd en daarom gebruikten wij pepperspray.",
+        "De getuige verklaarde dat de dader een onbetrouwbaar uiterlijk had en wegrende.",
         "Wij roken een sterke henneplucht en wij besloten het pand direct te betreden.",
         "Wij zagen dat de getuige angstig naar de dwergpapegaai keek en wij hoorden hem schreeuwen.",
+        "Wij dachten dat de man een wapen trok, dus wij trokken onmiddellijk onze dienstwapens.",
         "Wij besloten de achtervolging in te zetten omdat wij zagen dat de motoragent hulp nodig had.",
-        "Wij voelden aan de motorkap dat deze nog warm was en wij dachten dat het voertuig net geparkeerd was."
+        "De verdachte keek ons brutaal aan, waarna wij besloten hem te fouilleren.",
+        "Wij hoorden een harde knal en wij dachten dat er geschoten werd.",
+        "Wij zagen de bavianen met de mandarijnen rennen en wij dachten dat ze deze gestolen hadden.",
+        "Wij voelden aan de motorkap dat deze nog warm was en wij dachten dat het voertuig net geparkeerd was.",
+        "De sfeer was grimmig, dus wij besloten om de groep uiteen te drijven.",
+        "Wij zagen dat de verdachte trilde en wij wisten zeker dat hij iets verborg."
     ];
 
     window.joinGame = function() {
@@ -99,7 +127,7 @@
         myClass = document.getElementById('userclass').value;
         if(!myName || !myClass) return;
         if(myName.toLowerCase() === 'docent') document.getElementById('admin-area').style.display = 'flex';
-        document.getElementById('klas-titel').innerText = `Eenheid ${myClass.toUpperCase()}: Reden van Wetenschap`;
+        document.getElementById('klas-titel').innerText = `Eenheid ${myClass.toUpperCase()}: PV Bevindingen`;
         document.getElementById('login-overlay').style.display = 'none';
         initSync();
     };
@@ -130,7 +158,7 @@
     window.submitCorrectie = function() {
         const input = document.getElementById('correctie-input');
         if(!input.value.trim()) return;
-        push(ref(db, `correctie/${myClass}/posts`), { user: myName, text: input.value, up: 0, down: 0, time: Date.now() });
+        push(ref(db, `correctie/${myClass}/posts`), { user: myName, text: input.value, up: 0, down: 0 });
         input.value = "";
     };
 
@@ -148,7 +176,7 @@
     };
 
     window.resetFeed = function() {
-        if(confirm("Feed leegmaken?")) remove(ref(db, `correctie/${myClass}/posts`));
+        if(confirm("Feed leegmaken voor deze eenheid?")) remove(ref(db, `correctie/${myClass}/posts`));
     };
 </script>
 </body>
